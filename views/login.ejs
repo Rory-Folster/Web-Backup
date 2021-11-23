@@ -1,0 +1,48 @@
+<form>
+    <h2>Log in</h2>
+    <label for='username'>username</label>
+    <input type='text' name='username' required>
+    <div class='username error'></div>
+    <label for='password'>password</label>
+    <input type='password' name='password' required>
+    <div class='password error'></div>
+    <button>log in</button>
+</form>
+
+<script>
+    const form = document.querySelector('form');
+    const usernameError = document.querySelector('.username.error');
+    const passwordError = document.querySelector('.password.error');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+//reset errors
+usernameError.textContent = ''; //emptying errors everytime we submit new data.
+passwordError.textContent = '';
+
+//get values
+const username = form.username.value; //grabbing values from user inputs
+const password = form.password.value;
+
+try {
+    const res = await fetch('/login', { //using fetch to send a post request to the 'login' endpoint.
+        method: 'POST',
+        body: JSON.stringify({ username, password }), //sending a stringified JSON object containing information about username and password
+        headers: { 'Content-Type': 'application/json' }
+    });
+    const data = await res.json(); //passing the responce into a JS object called data
+    console.log(data); //console logging 'data' object
+    if (data.errors) {
+        usernameError.textContent = data.errors.username; //outputting any errors that may occur(password too short, email already used, etc.)
+        passwordError.textContent = data.errors.password;
+    };
+    if (data.customer) { //if this is a valid customer we are redirecting to the home page
+        location.assign('/');
+    };
+}
+catch (err) { //catching any endpoint errors
+    console.log(err);
+};
+    });
+</script>

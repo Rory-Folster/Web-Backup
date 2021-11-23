@@ -1,0 +1,55 @@
+<form> 
+    <h2>Sign up</h2>
+    <label for='username'>username</label>
+    <input type='text' name='username' required>
+    <div class='username error'></div>
+    <label for='email'>email</label>
+    <input type='text' name='email' required>
+    <div class='email error'></div>
+    <label for='password'>password</label>
+    <input type='password' name='password' required>
+    <div class='password error'></div>
+    <button>sign up</button>
+</form>
+
+<script>
+    const form = document.querySelector('form');
+    const usernameError = document.querySelector('.username.error');
+    const emailError = document.querySelector('.email.error');
+    const passwordError = document.querySelector('.password.error');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        //reset errors
+        usernameError.textContent = ''; //emptying errors everytime we submit new data.
+        emailError.textContent = '';
+        passwordError.textContent = '';
+
+        //get values
+        const username = form.username.value; //deconstructing values into variables to use later.
+        const email = form.email.value;
+        const password = form.password.value;
+
+        try {
+            const res = await fetch('/signup', { //using fetch to send a post request to the 'signup' endpoint.
+                method: 'POST',
+                body: JSON.stringify({ username, email, password }), //sending a stringified JSON object containing information about username email and password
+                headers: { 'Content-Type': 'application/json' }
+            });
+            const data = await res.json(); //passing the responce into a JS object called data
+            console.log(data); //console logging 'data' object
+            if (data.errors) {
+                usernameError.textContent = data.errors.username; //outputting any errors that may occur(password too short, email already used, etc.)
+                emailError.textContent = data.errors.email;
+                passwordError.textContent = data.errors.password;
+            }
+            if (data.customer) { //if customer was created, redirect to homepage
+                location.assign('/');
+            }
+        }
+        catch (err) { //catching any endpoint errors
+            console.log(err)
+        }
+    })
+</script>

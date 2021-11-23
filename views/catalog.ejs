@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<body>
+
+    <table class="table table-striped">
+        <tr class="bg-info">
+            <th>Name</th>
+            <th>Category</th>
+            <th>Price</th>
+        </tr>
+
+        <tbody id="myTable">
+        </tbody>
+    </table>
+
+    <script>
+        const api_url = 'http://localhost:4000/products/all' 
+
+        async function getData() {
+            const res = await fetch(api_url);
+            const data = await res.json();
+            const [{ category, price, product_name }] = data;
+            console.log(data)
+
+            var table = document.getElementById('myTable')
+
+        for (var i = 0; i < data.length; i++) {   
+            var row = `
+                <tr>
+                <td>${data[i].product_name}</td>
+                <td>${data[i].category}</td>
+                <td>$${data[i].price}</td>
+                </tr>`
+            table.innerHTML += row
+
+}}
+
+
+        getData();
+    </script>
+</body>
+</html>
